@@ -2,13 +2,21 @@ name: container01
 on: push
 
 jobs:
-  node-docker:
+  docker-steps:
     runs-on: ubuntu-latest
-    container: #起動するコンテナイメージを指定
-      image: node:13.5.0-alpine3.10
+    container:
+      image: node:10.18.0-jessie
     steps:
+      - name: log node version
+        run: node -v
+
+      - name: Step with docker
+        uses: docker://node:12.14.1-alpine3.10 #このステップだけで起動するコンテナイメージ
+        with:
+          entrypoint: '/bin/echo' #コンテナ起動時にechoコマンドを実行
+          args: 'Hello World' #echoコマンドの引数
       - name: Log node version
-        run: |
-          node -v 
-          cat /etc/os-release
-          
+        uses: docker://node:12.14.1-alpine3.10 
+        with:
+          entrypoint: '/usr/local/bin/node' #コンテナ起動時にnodeコマンドを実行
+          args: -v #nodeコマンドの引数(バージョン確認)
