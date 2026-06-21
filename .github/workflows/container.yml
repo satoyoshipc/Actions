@@ -1,14 +1,24 @@
-name: container01
-on: push
+name: generate-docker-image
+on: 
+  #workflowを手動で実行
+  workflow_despatch:
 
 jobs:
   node-docker:
-    runs-on: ubuntu-latest
-    container: #起動するコンテナイメージを指定
-      image: node:13.5.0-alpine3.10
-    steps:
-      - name: Log node version
-        run: |
-          node -v 
-          cat /etc/os-release
-          
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name BuildImage
+      uses: docker-build-push-actions@v5
+      with:
+        context: ./
+        file: ./DockerFile
+        outputs: type=tar,dest=docker-image.tar
+        push: false
+        tags: "my-docker-image"
+    - name: UploadArtifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: docker-build-output
+        path: ./docker-image.tar
+        
